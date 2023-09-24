@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!--lang="ja"言語を日本語に設定する（これがないとブラウザが言語を間違えることがある）-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>外ヶ輪シューターズ鍵当番表</title>
+<script>
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth() + 1;
+    var date = now.getDate();
+    var dayOfWeek = now.getDay();
+    var dayOfWeek_kanji = ['日','月','火','水','木','金','土'];
+    var impossible = [];
+    var a = [];
+    var b = [];
+    var c = [];
+    window.onload = function addOption() {
+        document.getElementById('month').textContent = month;
+        document.getElementById('month_table').textContent = month;
+        document.getElementById('month+1').textContent = month + 1;
+        let calendar = document.getElementById('calendar');
+        for (var j = 0; j < 4; j++) {
+            let newRow = calendar.insertRow();
+            for (var i = 1 + j * 7; i < 8 + j * 7; i++) {
+                let newCell = newRow.insertCell();
+                let newText = document.createTextNode(i);
+                newCell.appendChild(newText);
+                // newCellにid（i）を付与する　setAttribute('付与する属性の名前',属性の中身);　setAttribute('idを',iにする')
+                newCell.setAttribute('id',i);
+                newCell.onclick = function() {
+                    // this(newCell)のクラスをredに変える　クラスがredならクラスを無くす
+                    this.classList.toggle("red");
+                }
+            }
+        }
+    }
+    function calendar() {
+        var div_create = document.getElementById('create');
+        if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+            for (var i = 1; i < 32; i++) {
+                let table = document.getElementById('table');
+                let newRow = table.insertRow();
+                let newCell = newRow.insertCell();
+                var dayOfWeek_now = new Date(year, month - 1, i);
+                var dayOfWeek_answer = dayOfWeek_now.getDay();
+                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
+                let newText = document.createTextNode(i + dayOfWeek_indication);
+                newText.value = i;
+                newCell.appendChild(newText);
+                table.style.display = 'inline-block';
+                div_create.style.display = 'none';
+            }
+        } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+            for (var i = 1; i < 31; i++) {
+                let table = document.getElementById('table');
+                let newRow = table.insertRow();
+                let newCell = newRow.insertCell();
+                var dayOfWeek_now = new Date(year, month - 1, i);
+                var dayOfWeek_answer = dayOfWeek_now.getDay();
+                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
+                let newText = document.createTextNode(i + dayOfWeek_indication);
+                newText.value = i;
+                newCell.appendChild(newText);
+                table.style.display = 'inline-block';
+                div_create.style.display = 'none';
+            }
+        } else if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+            for (var i = 1; i < 30; i++) {
+                let table = document.getElementById('table');
+                let newRow = table.insertRow();
+                let newCell = newRow.insertCell();
+                var dayOfWeek_now = new Date(year, month - 1, i);
+                var dayOfWeek_answer = dayOfWeek_now.getDay();
+                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
+                let newText = document.createTextNode(i + dayOfWeek_indication);
+                newText.value = i;
+                newCell.appendChild(newText);
+                table.style.display = 'inline-block';
+                div_create.style.display = 'none';
+                }
+        } else {
+            for (var i = 1; i < 29; i++) {
+                let table = document.getElementById('table');
+                let newRow = table.insertRow();
+                let newCell = newRow.insertCell();
+                var dayOfWeek_now = new Date(year, month - 1, i);
+                var dayOfWeek_answer = dayOfWeek_now.getDay();
+                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
+                let newText = document.createTextNode(i + dayOfWeek_indication);
+                newText.value = i;
+                newCell.appendChild(newText);
+                table.style.display = 'inline-block';
+                div_create.style.display = 'none';
+            }
+        }
+    }
+</script>
+<style>
+body {
+    font-family: sans-serif;
+    margin: 0px;
+    text-align: center;
+}
+h1 {
+    margin: 0px;
+}
+table {
+    margin-top: 10px;
+    border-collapse: collapse;
+    font-size: 20px;
+    display: none;
+}
+th {
+    border:1px rgb(158, 158, 158) solid;
+}
+td {
+    border:1px rgb(158, 158, 158) solid;
+    background-color: #ffffff;
+}
+button {
+    font-size: 20px;
+    display: none;
+    margin: auto;
+}
+p {
+    font-size: 30px;
+    margin: 0px;
+}
+.calendar {
+    display: inline-block;
+    font-size: 30px;
+}
+.registration {
+    display: block;
+}
+.red {
+    background-color: #ff0000;
+}
+</style>
+</head>
+<body>
+<h1>外ヶ輪シューターズ鍵当番表</h1>
+<div id="div">
+<p><a id="month"></a>月</p>
+<p><a id="impossible"></a>さんの不可日</p>
+<table id="calendar" class="calendar">
+    <tr>
+        <th>日</th>
+        <th>月</th>
+        <th>火</th>
+        <th>水</th>
+        <th>木</th>
+        <th>金</th>
+        <th>土</th>
+    </tr>
+</table>
+<button id="registration" class="registration">登録</button>
+</div>
+<div id="create">
+<button onclick="calendar()">作成</button>
+</div>
+<table id="table">
+    <tr>
+        <th>日（曜日）</th>
+        <th>備考</th>
+        <th><a id="month_table"></a>月</th>
+    </tr>
+</table>
+<table>
+    <tr>
+        <th>日（曜日）</th>
+        <th>備考</th>
+        <th><a id="month+1"></a>月</th>
+    </tr>
+</table>
+</body>
+</html>
