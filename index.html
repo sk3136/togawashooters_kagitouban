@@ -30,11 +30,21 @@
                 // newCellにid（i）を付与する　setAttribute('付与する属性の名前',属性の中身);　setAttribute('idを',iにする')
                 newCell.setAttribute('id',i);
                 newCell.onclick = function() {
-                    // this(newCell)のクラスをredに変える　クラスがredならクラスを無くす
+                    // this(newCell)のクラスをredに変える　クラスがついているならクラスを無くす
                     this.classList.toggle("red");
                 }
             }
         }
+    }
+    function redday() {
+        alert('a')
+        var redday_id = document.getElementsByClassName('red').getAttribute('id');
+        alert('b')
+        impossible = [];
+        alert('c')
+        impossible = [redday_id];
+        alert('d')
+        alert(impossible);
     }
     function calendar() {
         var div_create = document.getElementById('create');
@@ -141,7 +151,7 @@ p {
 </style>
 </head>
 <body>
-<h1>外ヶ輪シューターズ鍵当番表</h1>
+<h1>外ヶ輪シューターズ<br>鍵当番表</h1>
 <div id="div">
 <p><a id="month"></a>月</p>
 <p><a id="impossible"></a>さんの不可日</p>
@@ -156,7 +166,7 @@ p {
         <th>土</th>
     </tr>
 </table>
-<button id="registration" class="registration">登録</button>
+<button id="registration" class="registration" onclick="redday()">登録</button>
 </div>
 <div id="create">
 <button onclick="calendar()">作成</button>
