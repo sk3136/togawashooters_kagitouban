@@ -16,10 +16,16 @@
     var a = [];
     var b = [];
     var c = [];
+    var member_day = [a, b, c];
+    var member = ['a','b','c'];
+    var count = 0;
     window.onload = function addOption() {
         document.getElementById('month').textContent = month;
         document.getElementById('month_table').textContent = month;
         document.getElementById('month+1').textContent = month + 1;
+        document.getElementById('impossible').textContent = member[0];
+        var div_create = document.getElementById("create");
+        div_create.style.display = 'none';
         let calendar = document.getElementById('calendar');
         for (var j = 0; j < 4; j++) {
             let newRow = calendar.insertRow();
@@ -37,14 +43,27 @@
         }
     }
     function redday() {
-        alert('a')
-        var redday_id = document.getElementsByClassName('red').getAttribute('id');
-        alert('b')
+        var red = document.getElementsByClassName("red");
+        var div = document.getElementById("div");
+        var div_create = document.getElementById("create");
         impossible = [];
-        alert('c')
-        impossible = [redday_id];
-        alert('d')
-        alert(impossible);
+        for (var i = 0; i < red.length; i++) {
+            impossible.push(red[i].id);
+            member_day[count].push(impossible);
+            impossible = [];
+        }
+        count = count + 1;
+        for (var i = red.length - 1; i >= 0; i--) {
+            // remove 要素からクラスを削除する
+            red[i].classList.remove("red");
+        }
+        if (member_day.length == count) {
+            div.style.display = 'none';
+            div_create.style.display = 'block';
+        }
+        document.getElementById('impossible').textContent = member[count];
+        alert(count)
+        alert(member_day[count - 1])
     }
     function calendar() {
         var div_create = document.getElementById('create');
@@ -131,7 +150,7 @@ td {
 }
 button {
     font-size: 20px;
-    display: none;
+    display: block;
     margin: auto;
 }
 p {
@@ -141,9 +160,6 @@ p {
 .calendar {
     display: inline-block;
     font-size: 30px;
-}
-.registration {
-    display: block;
 }
 .red {
     background-color: #ff0000;
@@ -166,7 +182,7 @@ p {
         <th>土</th>
     </tr>
 </table>
-<button id="registration" class="registration" onclick="redday()">登録</button>
+<button id="registration" onclick="redday()">登録</button>
 </div>
 <div id="create">
 <button onclick="calendar()">作成</button>
@@ -174,14 +190,12 @@ p {
 <table id="table">
     <tr>
         <th>日（曜日）</th>
-        <th>備考</th>
         <th><a id="month_table"></a>月</th>
     </tr>
 </table>
 <table>
     <tr>
         <th>日（曜日）</th>
-        <th>備考</th>
         <th><a id="month+1"></a>月</th>
     </tr>
 </table>
