@@ -16,8 +16,9 @@
     var a = [];
     var b = [];
     var c = [];
-    var member_day = [a, b, c];
-    var member = ['a','b','c'];
+    var d = [];
+    var member_day = [a, b, c, d];
+    var member = ['a','b','c','d'];
     var count = 0;
     window.onload = function addOption() {
         document.getElementById('month').textContent = month;
@@ -62,68 +63,104 @@
             div_create.style.display = 'block';
         }
         document.getElementById('impossible').textContent = member[count];
-        alert(count)
-        alert(member_day[count - 1])
+        /*alert(count)
+        alert(member_day[count - 1])*/
+    }
+    function restart() {
+        var div = document.getElementById("div");
+        var div_create = document.getElementById("create");
+        div.style.display = 'block';
+        div_create.style.display = 'none';
+        document.getElementById('impossible').textContent = member[0];
+        impossible = [];
+        a = [];
+        b = [];
+        c = [];
+        d = [];
+        member_day = [a, b, c, d];
+        count = 0;
     }
     function calendar() {
         var div_create = document.getElementById('create');
+        var equal = false;
+        var last_monthday = '';
         if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
-            for (var i = 1; i < 32; i++) {
-                let table = document.getElementById('table');
-                let newRow = table.insertRow();
-                let newCell = newRow.insertCell();
-                var dayOfWeek_now = new Date(year, month - 1, i);
-                var dayOfWeek_answer = dayOfWeek_now.getDay();
-                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
-                let newText = document.createTextNode(i + dayOfWeek_indication);
-                newText.value = i;
-                newCell.appendChild(newText);
-                table.style.display = 'inline-block';
-                div_create.style.display = 'none';
-            }
+            last_monthday = 31;
         } else if (month == 4 || month == 6 || month == 9 || month == 11) {
-            for (var i = 1; i < 31; i++) {
-                let table = document.getElementById('table');
-                let newRow = table.insertRow();
-                let newCell = newRow.insertCell();
-                var dayOfWeek_now = new Date(year, month - 1, i);
-                var dayOfWeek_answer = dayOfWeek_now.getDay();
-                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
-                let newText = document.createTextNode(i + dayOfWeek_indication);
-                newText.value = i;
-                newCell.appendChild(newText);
-                table.style.display = 'inline-block';
-                div_create.style.display = 'none';
-            }
+            last_monthday = 30;
         } else if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
-            for (var i = 1; i < 30; i++) {
-                let table = document.getElementById('table');
-                let newRow = table.insertRow();
-                let newCell = newRow.insertCell();
-                var dayOfWeek_now = new Date(year, month - 1, i);
-                var dayOfWeek_answer = dayOfWeek_now.getDay();
-                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
-                let newText = document.createTextNode(i + dayOfWeek_indication);
-                newText.value = i;
-                newCell.appendChild(newText);
-                table.style.display = 'inline-block';
-                div_create.style.display = 'none';
-                }
+            last_monthday = 29;
         } else {
-            for (var i = 1; i < 29; i++) {
-                let table = document.getElementById('table');
-                let newRow = table.insertRow();
-                let newCell = newRow.insertCell();
-                var dayOfWeek_now = new Date(year, month - 1, i);
-                var dayOfWeek_answer = dayOfWeek_now.getDay();
-                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
-                let newText = document.createTextNode(i + dayOfWeek_indication);
-                newText.value = i;
-                newCell.appendChild(newText);
-                table.style.display = 'inline-block';
-                div_create.style.display = 'none';
+            last_monthday = 28;
+        }
+        // while文　条件式がtrueの間繰り返す　この場合equalがfalseの間繰り返す
+        while (equal == false) {
+            var touban = [];
+            var random_count = [0, 0, 0, 0];
+            for (var i = 0; i < last_monthday; i++) {
+                var possible = [0, 1, 2, 3];
+                for (var k = member_day.length - 1; k >= 0; k--) {
+                    for (var j = 0; j < member_day[k].length; j++) {
+                        if (i + 1 == member_day[k][j]) {
+                            // splice(何番目の要素から,いくつ削除する)
+                            possible.splice(k,1);
+                            break;
+                        }
+                    }
+                }
+                if (possible.length == 0) {
+                    alert('全員が当番に出られない日があります。やり直してください')
+                    restart();
+                    reload();
+                }
+                // Math.floor　小数点以下を切り捨て　Math.random() 0からpossible.length未満の値の整数の乱数を作る
+                var random = Math.floor(Math.random() * possible.length);
+                // ランダムに選ばれた0~possible.length未満の値の整数をtoubanに追加
+                touban.push(possible[random]);
+                // メンバーの選ばれた日数を数える
+                random_count[possible[random]]++
+            }
+            for (var i = 0; i < random_count.length; i++) {
+                if (random_count[i] == Math.floor(last_monthday/member.length) || random_count[i] == Math.floor(last_monthday/member.length) + 1) {
+                    equal = true;
+                } else {
+                    equal = false;
+                    break;
+                }
             }
         }
+        for (var i = 0; i < last_monthday; i++) {
+            let table = document.getElementById('table');
+            let newRow = table.insertRow();
+            let newCell = newRow.insertCell();
+            let newCell_2 = newRow.insertCell();
+            var dayOfWeek_now = new Date(year, month - 1, i + 1);
+            var dayOfWeek_answer = dayOfWeek_now.getDay();
+            var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
+            let newText = document.createTextNode(i + 1 + dayOfWeek_indication);
+            let newText_2 = document.createTextNode(member[touban[i]]);
+            newText.value = i + 1;
+            newCell.appendChild(newText);
+            newCell_2.appendChild(newText_2);
+            table.style.display = 'inline-block';
+            div_create.style.display = 'none';
+        }
+        /*for (var i = 0; i < 28; i++) {
+            let table = document.getElementById('table');
+            let newRow = table.insertRow();
+            let newCell = newRow.insertCell();
+            let newCell_2 = newRow.insertCell();
+            var dayOfWeek_now = new Date(year, month - 1, i + 1);
+            var dayOfWeek_answer = dayOfWeek_now.getDay();
+            var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
+            let newText = document.createTextNode(i + 1 + dayOfWeek_indication);
+            let newText_2 = document.createTextNode(member[touban[i]]);
+            newText.value = i + 1;
+            newCell.appendChild(newText);
+            newCell_2.appendChild(newText_2);
+            table.style.display = 'inline-block';
+            div_create.style.display = 'none';
+        }*/
     }
 </script>
 <style>
