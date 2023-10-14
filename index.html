@@ -13,20 +13,39 @@
     var dayOfWeek = now.getDay();
     var dayOfWeek_kanji = ['日','月','火','水','木','金','土'];
     var impossible = [];
-    var a = [];
-    var b = [];
-    var c = [];
-    var d = [];
-    var member_day = [a, b, c, d];
-    var member = ['a','b','c','d'];
+    var member_day = [];
+    var member = [];
     var count = 0;
+    var member_count = '';
     window.onload = function addOption() {
         document.getElementById('month').textContent = month;
         document.getElementById('month_table').textContent = month;
         document.getElementById('month+1').textContent = month + 1;
-        document.getElementById('impossible').textContent = member[0];
+        var div = document.getElementById("div");
+        div.style.display = 'none';
         var div_create = document.getElementById("create");
         div_create.style.display = 'none';
+        var div_start = document.getElementById("start");
+        div_start.style.display = 'block';
+        for (var i = 1; i < 11; i++) {
+            var select = document.getElementById("member");
+            var option = document.createElement("option");
+            option.text = i;
+            option.value = i;
+            select.appendChild(option);
+        }
+    }
+    function firstcalendar() {
+        member_count = document.getElementById("member").value;
+        for (var i = 0; i < Number(member_count); i++) {
+            member_day.push([]);
+            member.push('a' + i);
+        }
+        document.getElementById('impossible').textContent = member[0];
+        var div = document.getElementById("div");
+        div.style.display = 'block';
+        var div_start = document.getElementById("start");
+        div_start.style.display = 'none';
         let calendar = document.getElementById('calendar');
         for (var j = 0; j < 4; j++) {
             let newRow = calendar.insertRow();
@@ -69,15 +88,16 @@
     function restart() {
         var div = document.getElementById("div");
         var div_create = document.getElementById("create");
+        var div_start = document.getElementById("start");
         div.style.display = 'block';
         div_create.style.display = 'none';
+        div_start.style.display = 'none'
         document.getElementById('impossible').textContent = member[0];
         impossible = [];
-        a = [];
-        b = [];
-        c = [];
-        d = [];
-        member_day = [a, b, c, d];
+        member_day = [];
+        for (var i = 0; i < Number(member_count); i++) {
+            member_day.push([]);
+        }
         count = 0;
     }
     function calendar() {
@@ -96,9 +116,16 @@
         // while文　条件式がtrueの間繰り返す　この場合equalがfalseの間繰り返す
         while (equal == false) {
             var touban = [];
-            var random_count = [0, 0, 0, 0];
+            var random_count = [];
+            var possible = [];
+            for (var i = 0; i < Number(member_count); i++) {
+                random_count.push(Number(0));
+            }
             for (var i = 0; i < last_monthday; i++) {
-                var possible = [0, 1, 2, 3];
+                possible = [];
+                for (var n = 0; n < Number(member_count); n++) {
+                    possible.push(Number(n));
+                }
                 for (var k = member_day.length - 1; k >= 0; k--) {
                     for (var j = 0; j < member_day[k].length; j++) {
                         if (i + 1 == member_day[k][j]) {
@@ -109,7 +136,7 @@
                     }
                 }
                 if (possible.length == 0) {
-                    alert('全員が当番に出られない日があります。やり直してください')
+                    alert('全員が当番に出られない日があります。やり直してください。')
                     restart();
                     reload();
                 }
@@ -121,7 +148,7 @@
                 random_count[possible[random]]++
             }
             for (var i = 0; i < random_count.length; i++) {
-                if (random_count[i] == Math.floor(last_monthday/member.length) || random_count[i] == Math.floor(last_monthday/member.length) + 1) {
+                if (random_count[i] == Math.floor(last_monthday/Number(member_count)) || random_count[i] == Math.floor(last_monthday/Number(member_count)) + 1) {
                     equal = true;
                 } else {
                     equal = false;
@@ -145,22 +172,6 @@
             table.style.display = 'inline-block';
             div_create.style.display = 'none';
         }
-        /*for (var i = 0; i < 28; i++) {
-            let table = document.getElementById('table');
-            let newRow = table.insertRow();
-            let newCell = newRow.insertCell();
-            let newCell_2 = newRow.insertCell();
-            var dayOfWeek_now = new Date(year, month - 1, i + 1);
-            var dayOfWeek_answer = dayOfWeek_now.getDay();
-            var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
-            let newText = document.createTextNode(i + 1 + dayOfWeek_indication);
-            let newText_2 = document.createTextNode(member[touban[i]]);
-            newText.value = i + 1;
-            newCell.appendChild(newText);
-            newCell_2.appendChild(newText_2);
-            table.style.display = 'inline-block';
-            div_create.style.display = 'none';
-        }*/
     }
 </script>
 <style>
@@ -194,6 +205,12 @@ p {
     font-size: 30px;
     margin: 0px;
 }
+select {
+    font-size: 25px;
+}
+label {
+    font-size: 25px;
+}
 .calendar {
     display: inline-block;
     font-size: 30px;
@@ -205,6 +222,12 @@ p {
 </head>
 <body>
 <h1>外ヶ輪シューターズ<br>鍵当番表</h1>
+<div id="start">
+<p>鍵当番をする人数を選んでください</p>
+<select id="member"></select>
+<label for="member">人</label>
+<button onclick="firstcalendar()">決定</button>
+</div>
 <div id="div">
 <p><a id="month"></a>月</p>
 <p><a id="impossible"></a>さんの不可日</p>
