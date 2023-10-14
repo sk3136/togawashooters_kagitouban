@@ -101,6 +101,8 @@
                 var possible = [0, 1, 2, 3];
                 for (var k = member_day.length - 1; k >= 0; k--) {
                     for (var j = 0; j < member_day[k].length; j++) {
+                        alert(member_day[k][j])
+                        alert(member_day)
                         if (i + 1 == member_day[k][j]) {
                             // splice(何番目の要素から,いくつ削除する)
                             possible.splice(k,1);
