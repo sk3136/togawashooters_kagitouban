@@ -27,7 +27,7 @@
         div_create.style.display = 'none';
         var div_start = document.getElementById("start");
         div_start.style.display = 'block';
-        for (var i = 1; i < 11; i++) {
+        for (var i = 1; i < 32; i++) {
             var select = document.getElementById("member");
             var option = document.createElement("option");
             option.text = i;
@@ -47,19 +47,46 @@
         var div_start = document.getElementById("start");
         div_start.style.display = 'none';
         let calendar = document.getElementById('calendar');
-        for (var j = 0; j < 4; j++) {
+        var last_monthday = '';
+        if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+            last_monthday = 31;
+        } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+            last_monthday = 30;
+        } else if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+            last_monthday = 29;
+        } else {
+            last_monthday = 28;
+        }
+        var last_day = false;
+        var week_Number = 0;
+        var first_dayOfWeek = new Date(year, month - 1, 1).getDay();
+        while (last_day == false) {
             let newRow = calendar.insertRow();
-            for (var i = 1 + j * 7; i < 8 + j * 7; i++) {
+            for (var i = 1 + week_Number * 7; i < 8 + week_Number * 7; i++) {
+                var space = false;
                 let newCell = newRow.insertCell();
-                let newText = document.createTextNode(i);
+                var text_shift = i - first_dayOfWeek;
+                if (text_shift <= 0) {
+                    text_shift = '　';
+                    space = true;
+                }
+                let newText = document.createTextNode(text_shift);
                 newCell.appendChild(newText);
                 // newCellにid（i）を付与する　setAttribute('付与する属性の名前',属性の中身);　setAttribute('idを',iにする')
-                newCell.setAttribute('id',i);
-                newCell.onclick = function() {
-                    // this(newCell)のクラスをredに変える　クラスがついているならクラスを無くす
-                    this.classList.toggle("red");
+                newCell.setAttribute('id',i - first_dayOfWeek);
+                if (space == false) {
+                    newCell.onclick = function() {
+                        // this(newCell)のクラスをredに変える　クラスがついているならクラスを無くす
+                        this.classList.toggle("red");
+                    }
+                }
+                // 日付けを増やす回数を月の日数と曜日で増えた日数の和にする
+                if (i == last_monthday + first_dayOfWeek){
+                    last_day = true;
+                    break;
                 }
             }
+            week_Number = week_Number + 1;
         }
     }
     function redday() {
@@ -127,6 +154,10 @@
                     possible.push(Number(n));
                 }
                 for (var k = member_day.length - 1; k >= 0; k--) {
+                    // ceil 小数点以下の切り上げ　下のfor文はfor文の中のif文が発動しないと入れないためfor文の上にif文を置く
+                    if (Math.ceil(last_monthday/Number(member_count)) == random_count[k]) {
+                        possible.splice(k,1);
+                    }
                     for (var j = 0; j < member_day[k].length; j++) {
                         if (i + 1 == member_day[k][j]) {
                             // splice(何番目の要素から,いくつ削除する)
@@ -140,11 +171,18 @@
                     restart();
                     reload();
                 }
+                for (var f = member_day.length - 1; f >= 0; f--) {
+                    if (last_monthday - Math.floor(last_monthday/Number(member_count)) < member_day[f].length) {
+                        alert('全員に平等に当番を分けられません。やり直してください。')
+                        restart();
+                        reload();
+                    }
+                }
                 // Math.floor　小数点以下を切り捨て　Math.random() 0からpossible.length未満の値の整数の乱数を作る
                 var random = Math.floor(Math.random() * possible.length);
                 // ランダムに選ばれた0~possible.length未満の値の整数をtoubanに追加
                 touban.push(possible[random]);
-                // メンバーの選ばれた日数を数える
+                // メンバーごとの割り振られた日数を1増やす
                 random_count[possible[random]]++
             }
             for (var i = 0; i < random_count.length; i++) {
@@ -161,17 +199,28 @@
             let newRow = table.insertRow();
             let newCell = newRow.insertCell();
             let newCell_2 = newRow.insertCell();
-            var dayOfWeek_now = new Date(year, month - 1, i + 1);
-            var dayOfWeek_answer = dayOfWeek_now.getDay();
-            var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_answer] + ')';
+            var dayOfWeek_indication = '(' + dayOfWeek_kanji[new Date(year, month - 1, i + 1).getDay()] + ')';
             let newText = document.createTextNode(i + 1 + dayOfWeek_indication);
             let newText_2 = document.createTextNode(member[touban[i]]);
             newText.value = i + 1;
             newCell.appendChild(newText);
             newCell_2.appendChild(newText_2);
             table.style.display = 'inline-block';
-            div_create.style.display = 'none';
         }
+        /*for (var i = 0; i < last_monthday; i++) {
+            let second_table = document.getElementById('second_table');
+            let second_newRow = second_table.insertRow();
+            let second_newCell = second_newRow.insertCell();
+            let second_newCell_2 = second_newRow.insertCell();
+            var second_dayOfWeek_indication = '(' + dayOfWeek_kanji[new Date(year, month, i + 1).getDay()] + ')';
+            let second_newText = document.createTextNode(i + 1 + second_dayOfWeek_indication);
+            let second_newText_2 = document.createTextNode(member[touban[i]]);
+            second_newText.value = i + 1;
+            second_newCell.appendChild(second_newText);
+            second_newCell_2.appendChild(second_newText_2);
+            second_table.style.display = 'inline-block';
+        }*/
+        div_create.style.display = 'none';
     }
 </script>
 <style>
@@ -253,7 +302,7 @@ label {
         <th><a id="month_table"></a>月</th>
     </tr>
 </table>
-<table>
+<table id="second_table">
     <tr>
         <th>日（曜日）</th>
         <th><a id="month+1"></a>月</th>
