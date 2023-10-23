@@ -22,13 +22,6 @@
     var first_last_monthday = '';
     var second_last_monthday = '';
     window.onload = function addOption() {
-        document.getElementById('month_calendar').textContent = month;
-        document.getElementById('month').textContent = month;
-        if (month + 1 < 13) {
-            document.getElementById('month+1').textContent = month + 1;
-        } else {
-            document.getElementById('month+1').textContent = month - 12;
-        }
         var div = document.getElementById("div");
         div.style.display = 'none';
         var div_create = document.getElementById("create");
@@ -41,6 +34,26 @@
             option.text = i;
             option.value = i;
             select.appendChild(option);
+        }
+        for (var i = year; i < year + 2; i++) {
+            var select = document.getElementById("select_year");
+            var option = document.createElement("option");
+            option.text = i;
+            option.value = i;
+            select.appendChild(option);
+            if (option.value == year) {
+                option.setAttribute("selected", true);
+            }
+        }
+        for (var i = 1; i < 13; i++) {
+            var select = document.getElementById("select_month");
+            var option = document.createElement("option");
+            option.text = i;
+            option.value = i;
+            select.appendChild(option);
+            if (option.value == month) {
+                option.setAttribute("selected", true);
+            }
         }
     }
     function last_monthday_Number(n) {
@@ -60,6 +73,17 @@
         }
     }
     function firstcalendar() {
+        if (calendar_Number == 1) {
+            year = Number(document.getElementById("select_year").value);
+            month = Number(document.getElementById("select_month").value);
+            document.getElementById('month_calendar').textContent = month;
+            document.getElementById('month').textContent = month;
+            if (month + 1 < 13) {
+                document.getElementById('month+1').textContent = month + 1;
+            } else {
+                document.getElementById('month+1').textContent = month - 11;
+            }
+        }
         member_count = document.getElementById("member").value;
         member_day = [];
         for (var i = 0; i < Number(member_count); i++) {
@@ -159,7 +183,7 @@
             if (month + 1 < 13) {
                 document.getElementById('month_calendar').textContent = month + 1;
             } else {
-                document.getElementById('month_calendar').textContent = month - 12;
+                document.getElementById('month_calendar').textContent = month - 11;
             }
             firstcalendar();
         }
@@ -182,7 +206,7 @@
                     possible.push(Number(n));
                 }
                 for (var k = member_day.length - 1; k >= 0; k--) {
-                    // ceil 小数点以下の切り上げ　下のfor文はfor文の中のif文が発動しないと入れないためfor文の上にif文を置く
+                    // ceil 小数点以下の切り上げ　下のfor文はfor文の中のmember_dayの中身がないと入れないためfor文の上にif文を置く
                     if (Math.ceil(last_monthday_fs/Number(member_count)) == random_count[k]) {
                         possible.splice(k,1);
                     }
@@ -315,6 +339,11 @@ label {
 <p>鍵当番をする人数を<br>選んでください</p>
 <select id="member"></select>
 <label for="member">人</label>
+<p>当番表を作る年と月を<br>選んでください</p>
+<select id="select_year"></select>
+<label for="select_year">年</label>
+<select id="select_month"></select>
+<label for="select_month">月</label>
 <button onclick="firstcalendar()">決定</button>
 </div>
 <div id="div">
