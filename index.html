@@ -252,7 +252,8 @@
                 let second_newRow = second_table.insertRow();
                 let second_newCell = second_newRow.insertCell();
                 let second_newCell_2 = second_newRow.insertCell();
-                var second_dayOfWeek_indication = '(' + dayOfWeek_kanji[new Date(year, month, i + 1).getDay()] + ')';
+                var second_dayOfWeek_now = new Date(year, month, i + 1).getDay();
+                var second_dayOfWeek_indication = '(' + dayOfWeek_kanji[second_dayOfWeek_now] + ')';
                 let second_newText = document.createTextNode(i + 1 + second_dayOfWeek_indication);
                 let second_newText_2 = document.createTextNode(member[touban[i + first_last_monthday]]);
                 second_newText.value = i + 1;
@@ -268,7 +269,8 @@
                 let newRow = table.insertRow();
                 let newCell = newRow.insertCell();
                 let newCell_2 = newRow.insertCell();
-                var dayOfWeek_indication = '(' + dayOfWeek_kanji[new Date(year, month - 1, i + 1).getDay()] + ')';
+                var dayOfWeek_now = new Date(year, month - 1, i + 1).getDay();
+                var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_now] + ')';
                 let newText = document.createTextNode(i + 1 + dayOfWeek_indication);
                 let newText_2 = document.createTextNode(member[touban[i]]);
                 newText.value = i + 1;
