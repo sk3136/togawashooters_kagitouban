@@ -191,7 +191,20 @@
     function calendar() {
         var div_create = document.getElementById('create');
         var equal = false;
+        var friday = 0;
         var last_monthday_fs = Number(first_last_monthday + second_last_monthday);
+        for (var i = 0; i < first_last_monthday; i++) {
+            var dayOfWeek_now = new Date(year, month - 1, i + 1).getDay();
+            if (dayOfWeek_now == 5) {
+                friday++
+            }
+        }
+        for (var i = 0; i < second_last_monthday; i++) {
+            dayOfWeek_now = new Date(year, month, i + 1).getDay();
+            if (dayOfWeek_now == 5) {
+                friday++
+            }
+        }
         // while文　条件式がtrueの間繰り返す　この場合equalがfalseの間繰り返す
         while (equal == false) {
             var touban = [];
@@ -206,9 +219,15 @@
                     possible.push(Number(n));
                 }
                 for (var k = member_day.length - 1; k >= 0; k--) {
-                    // ceil 小数点以下の切り上げ　下のfor文はfor文の中のmember_dayの中身がないと入れないためfor文の上にif文を置く
-                    if (Math.ceil(last_monthday_fs/Number(member_count)) == random_count[k]) {
-                        possible.splice(k,1);
+                    if (Math.ceil(Number(last_monthday_fs - friday) % Number(member_count)) != 0) {
+                        // ceil 小数点以下の切り上げ　下のfor文はfor文の中のmember_dayの中身がないと入れないためfor文の上にif文を置く
+                        if (Math.ceil(Number(last_monthday_fs - friday)/Number(member_count)) == random_count[k]) {
+                            possible.splice(k,1);
+                        }
+                    } else {
+                        if (Math.ceil(Number(last_monthday_fs - friday)/Number(member_count)) + 1 == random_count[k]) {
+                            possible.splice(k,1);
+                        }
                     }
                     for (var j = 0; j < member_day[k].length; j++) {
                         if (i + 1 == member_day[k][j]) {
@@ -224,21 +243,30 @@
                     reload();
                 }
                 for (var f = member_day.length - 1; f >= 0; f--) {
-                    if (last_monthday_fs - Math.floor(last_monthday_fs/Number(member_count)) < member_day[f].length) {
+                    if (Number(last_monthday_fs - friday) - Math.floor(Number(last_monthday_fs - friday)/Number(member_count)) < member_day[f].length) {
                         alert('全員に平等に当番を分けられません。やり直してください。')
                         restart();
                         reload();
                     }
                 }
-                // Math.floor　小数点以下を切り捨て　Math.random() 0からpossible.length未満の値の整数の乱数を作る
-                var random = Math.floor(Math.random() * possible.length);
-                // ランダムに選ばれた0~possible.length未満の値の整数をtoubanに追加
-                touban.push(possible[random]);
-                // メンバーごとの割り振られた日数を1増やす
-                random_count[possible[random]]++
+                if (i > Number(first_last_monthday)) {
+                    dayOfWeek_now = new Date(year, month, i + 1 - first_last_monthday).getDay();
+                } else {
+                    dayOfWeek_now = new Date(year, month - 1, i + 1).getDay();
+                }
+                if (dayOfWeek_now != 5) {
+                    // Math.floor　小数点以下を切り捨て　Math.random() 0からpossible.length未満の値の整数の乱数を作る
+                    var random = Math.floor(Math.random() * possible.length);
+                    // ランダムに選ばれた0~possible.length未満の値の整数をtoubanに追加
+                    touban.push(possible[random]);
+                    // メンバーごとの割り振られた日数を1増やす
+                    random_count[possible[random]]++
+                } else {
+                    touban.push(' ');
+                }
             }
             for (var i = 0; i < random_count.length; i++) {
-                if (random_count[i] == Math.floor(last_monthday_fs/Number(member_count)) || random_count[i] == Math.floor(last_monthday_fs/Number(member_count)) + 1) {
+                if (random_count[i] == Math.floor(Number(last_monthday_fs - friday)/Number(member_count)) || random_count[i] == Math.floor(Number(last_monthday_fs - friday)/Number(member_count)) + 1) {
                     equal = true;
                 } else {
                     equal = false;
