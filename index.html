@@ -262,7 +262,7 @@
                     // メンバーごとの割り振られた日数を1増やす
                     random_count[possible[random]]++
                 } else {
-                    touban.push(' ');
+                    touban.push('empty');
                 }
             }
             for (var i = 0; i < random_count.length; i++) {
@@ -283,7 +283,11 @@
                 var second_dayOfWeek_now = new Date(year, month, i + 1).getDay();
                 var second_dayOfWeek_indication = '(' + dayOfWeek_kanji[second_dayOfWeek_now] + ')';
                 let second_newText = document.createTextNode(i + 1 + second_dayOfWeek_indication);
-                let second_newText_2 = document.createTextNode(member[touban[i + first_last_monthday]]);
+                var contents = member[touban[i + first_last_monthday]];
+                if (touban[i + first_last_monthday] == 'empty') {
+                    contents = 'empty';
+                }
+                let second_newText_2 = document.createTextNode(contents);
                 second_newText.value = i + 1;
                 second_newCell.appendChild(second_newText);
                 second_newCell_2.appendChild(second_newText_2);
@@ -300,7 +304,11 @@
                 var dayOfWeek_now = new Date(year, month - 1, i + 1).getDay();
                 var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_now] + ')';
                 let newText = document.createTextNode(i + 1 + dayOfWeek_indication);
-                let newText_2 = document.createTextNode(member[touban[i]]);
+                var contents = member[touban[i]];
+                if (touban[i] == 'empty') {
+                    contents = 'empty';
+                }
+                let newText_2 = document.createTextNode(contents);
                 newText.value = i + 1;
                 newCell.appendChild(newText);
                 newCell_2.appendChild(newText_2);
