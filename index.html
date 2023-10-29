@@ -6,28 +6,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>外ヶ輪シューターズ鍵当番表</title>
 <script>
+    // 現在の年月日を取得
     var now = new Date();
+    // nowから年を取得
     var year = now.getFullYear();
+    // nowから月を取得1月が0なので+1
     var month = now.getMonth() + 1;
-    var date = now.getDate();
-    var dayOfWeek = now.getDay();
-    var dayOfWeek_kanji = ['日','月','火','水','木','金','土'];
-    var impossible = [];
-    var member_day = [];
-    var member = [];
-    var count = 0;
-    var member_count = '';
-    var calendar_Number = 1;
-    var last_monthday = '';
-    var first_last_monthday = '';
-    var second_last_monthday = '';
+    // ページが読み込まれたとき、メンバーの人数・年・月の選択画面を表示する
     window.onload = function addOption() {
-        var div = document.getElementById("div");
-        div.style.display = 'none';
-        var div_create = document.getElementById("create");
-        div_create.style.display = 'none';
-        var div_start = document.getElementById("start");
-        div_start.style.display = 'block';
+        // メンバーの人数のセレクトボックスを表示する
         for (var i = 1; i < 63; i++) {
             var select = document.getElementById("member");
             var option = document.createElement("option");
@@ -35,57 +22,83 @@
             option.value = i;
             select.appendChild(option);
         }
+        // 現在の年と次の年までのセレクトボックスを表示する
         for (var i = year; i < year + 2; i++) {
             var select = document.getElementById("select_year");
             var option = document.createElement("option");
             option.text = i;
             option.value = i;
             select.appendChild(option);
+            // 現在の年と選択された年が同じなら
             if (option.value == year) {
+                // 現在の年が選択された状態にする
                 option.setAttribute("selected", true);
             }
         }
+        // 1から12月までのセレクトボックスを表示する
         for (var i = 1; i < 13; i++) {
             var select = document.getElementById("select_month");
             var option = document.createElement("option");
             option.text = i;
             option.value = i;
             select.appendChild(option);
+            // 現在の年と選択された月が同じなら
             if (option.value == month) {
+                // 現在の月が選択された状態にする
                 option.setAttribute("selected", true);
             }
         }
     }
-    function last_monthday_Number(n) {
-        if (month + n == 1 || month + n == 3 || month + n == 5 || month + n == 7 || month + n == 8 || month + n == 10 || month + n == 12 || month + n == 13) {
+
+    // その月の日数
+    var last_monthday = '';
+    // 一月目の日数
+    var first_last_monthday = '';
+    // 二月目の日数
+    var second_last_monthday = '';
+    // 選択された年
+    var year_selected = 0;
+    // 選択された月
+    var month_selected = 0;
+    // last_monthdayを変更する
+    function last_monthday_Number(select_month) {
+        if (select_month == 1 || select_month == 3 || select_month == 5 || select_month == 7 || select_month == 8 || select_month == 10 || select_month == 12 || select_month == 13) {
             last_monthday = 31;
-        } else if (month + n == 4 || month + n == 6 || month + n == 9 || month + n == 11) {
+        } else if (select_month == 4 || select_month == 6 || select_month == 9 || select_month == 11) {
             last_monthday = 30;
-        } else if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+        } else if (year_selected % 4 == 0 && year_selected % 100 != 0 || year_selected % 400 == 0) {
             last_monthday = 29;
         } else {
             last_monthday = 28;
         }
-        if (n == 0) {
-            first_last_monthday = last_monthday;
-        } else {
-            second_last_monthday = last_monthday;
-        }
     }
+    
+    // メンバー全員の入れない日付けを保存する 例　[[1,3,5],[2,4,6]]と入力された場合一人目のメンバーが1,3,5日に入れない、二人目のメンバーが2,4,6日に入れないということ
+    var member_day = [];
+    // 表示されるメンバーの名前
+    var member = [];
+    // 入力されたメンバーの人数
+    var member_count = '';
+    // まだ当番表を作っていない状態・二度目の表示を設定中の状態・二度目の表示の設定が終わった状態の三つに分ける
+    var calendar_Number = 1;
+    // 入れない日付けを設定するカレンダーを作る
     function firstcalendar() {
         if (calendar_Number == 1) {
-            year = Number(document.getElementById("select_year").value);
-            month = Number(document.getElementById("select_month").value);
-            document.getElementById('month_calendar').textContent = month;
-            document.getElementById('month').textContent = month;
-            if (month + 1 < 13) {
-                document.getElementById('month+1').textContent = month + 1;
+            year_selected = Number(document.getElementById("select_year").value);
+            month_selected = Number(document.getElementById("select_month").value);
+            // カレンダーの上に表示されている月を選択された月にする
+            document.getElementById('month_calendar').textContent = month_selected;
+            // 当番表に表示されている月を選択された月にする
+            document.getElementById('month').textContent = month_selected;
+            if (month_selected + 1 < 13) {
+                document.getElementById('month+1').textContent = month_selected + 1;
             } else {
-                document.getElementById('month+1').textContent = month - 11;
+                document.getElementById('month+1').textContent = month_selected - 11;
             }
         }
         member_count = document.getElementById("member").value;
         member_day = [];
+        // 入力されたメンバーの人数分member_dayとmemberの枠を作る
         for (var i = 0; i < Number(member_count); i++) {
             member_day.push([]);
             member.push('a' + i);
@@ -96,32 +109,42 @@
         var div_start = document.getElementById("start");
         div_start.style.display = 'none';
         let calendar = document.getElementById('calendar');
+        // first_dayOfWeekの月をcalendar_Numberによって変更する
         var month_Number = '';
         last_monthday = '';
-        last_monthday_Number(0);
-        last_monthday_Number(1);
+        last_monthday_Number(month_selected);
+        first_last_monthday = last_monthday;
+        last_monthday_Number(month_selected + 1);
+        second_last_monthday = last_monthday;
         if (calendar_Number == 1) {
-            last_monthday_Number(0);
-            month_Number = month - 1;
+            last_monthday_Number(month_selected);
+            month_Number = month_selected - 1;
         } else if (calendar_Number == 2) {
-            last_monthday_Number(1);
-            month_Number = month;
+            last_monthday_Number(month_selected + 1);
+            month_Number = month_selected;
             calendar_Number = 3;
+            // カレンダーのテーブルの列を取得
             var second_table_row = calendar.rows;
             for (var i = second_table_row.length - 1; i >= 1; i--) {
+                // カレンダーのテーブルの列を消去する
                 calendar.deleteRow(i);
             }
         }
         var last_day = false;
+        // 現在のカレンダーの列数
         var week_Number = 0;
-        var first_dayOfWeek = new Date(year, month_Number, 1).getDay();
+        // 選択した月の初日の曜日
+        var first_dayOfWeek = new Date(year_selected, month_Number, 1).getDay();
         while (last_day == false) {
             let newRow = calendar.insertRow();
             for (var i = 1 + week_Number * 7; i < 8 + week_Number * 7; i++) {
                 var space = false;
                 let newCell = newRow.insertCell();
+                // 選択した月の初日の曜日分セルのテキストから数値を引く
                 var text_shift = i - first_dayOfWeek;
+                // セルのテキストの数値が0以下なら
                 if (text_shift <= 0) {
+                    // セルのテキストを空白にする
                     text_shift = '　';
                     space = true;
                 }
@@ -144,6 +167,12 @@
             week_Number = week_Number + 1;
         }
     }
+
+    // 関数reddayが実行された回数
+    var count = 0;
+    // 一人一人の入れない日付けを一時的に保存する 例 [1,3,5]と入力された場合1,3,5日に入れないということ
+    var impossible = [];
+    // 関数firstcalendarで設定した入れない日付けを変数に入力する
     function redday() {
         var red = document.getElementsByClassName("red");
         var div = document.getElementById("div");
@@ -165,6 +194,8 @@
         }
         document.getElementById('impossible').textContent = member[count];
     }
+
+    // 表示・変数の初期化をする
     function restart() {
         var div = document.getElementById("div");
         var div_create = document.getElementById("create");
@@ -180,27 +211,29 @@
             member_day.push([]);
         }
         if (calendar_Number == 2) {
-            if (month + 1 < 13) {
-                document.getElementById('month_calendar').textContent = month + 1;
+            if (month_selected + 1 < 13) {
+                document.getElementById('month_calendar').textContent = month_selected + 1;
             } else {
-                document.getElementById('month_calendar').textContent = month - 11;
+                document.getElementById('month_calendar').textContent = month_selected - 11;
             }
             firstcalendar();
         }
     }
+
+    // 当番表を作り、表示する
     function calendar() {
         var div_create = document.getElementById('create');
         var equal = false;
         var friday = 0;
         var last_monthday_fs = Number(first_last_monthday + second_last_monthday);
         for (var i = 0; i < first_last_monthday; i++) {
-            var dayOfWeek_now = new Date(year, month - 1, i + 1).getDay();
+            var dayOfWeek_now = new Date(year_selected, month_selected - 1, i + 1).getDay();
             if (dayOfWeek_now == 5) {
                 friday++
             }
         }
         for (var i = 0; i < second_last_monthday; i++) {
-            dayOfWeek_now = new Date(year, month, i + 1).getDay();
+            dayOfWeek_now = new Date(year_selected, month_selected, i + 1).getDay();
             if (dayOfWeek_now == 5) {
                 friday++
             }
@@ -250,9 +283,9 @@
                     }
                 }
                 if (i > Number(first_last_monthday)) {
-                    dayOfWeek_now = new Date(year, month, i + 1 - first_last_monthday).getDay();
+                    dayOfWeek_now = new Date(year_selected, month_selected, i + 1 - first_last_monthday).getDay();
                 } else {
-                    dayOfWeek_now = new Date(year, month - 1, i + 1).getDay();
+                    dayOfWeek_now = new Date(year_selected, month_selected - 1, i + 1).getDay();
                 }
                 if (dayOfWeek_now != 5) {
                     // Math.floor　小数点以下を切り捨て　Math.random() 0からpossible.length未満の値の整数の乱数を作る
@@ -274,13 +307,14 @@
                 }
             }
         }
+        var dayOfWeek_kanji = ['日','月','火','水','木','金','土'];
         if (calendar_Number == 3) {
             for (var i = 0; i < last_monthday; i++) {
                 let second_table = document.getElementById('second_table');
                 let second_newRow = second_table.insertRow();
                 let second_newCell = second_newRow.insertCell();
                 let second_newCell_2 = second_newRow.insertCell();
-                var second_dayOfWeek_now = new Date(year, month, i + 1).getDay();
+                var second_dayOfWeek_now = new Date(year_selected, month_selected, i + 1).getDay();
                 var second_dayOfWeek_indication = '(' + dayOfWeek_kanji[second_dayOfWeek_now] + ')';
                 let second_newText = document.createTextNode(i + 1 + second_dayOfWeek_indication);
                 var contents = member[touban[i + first_last_monthday]];
@@ -301,7 +335,7 @@
                 let newRow = table.insertRow();
                 let newCell = newRow.insertCell();
                 let newCell_2 = newRow.insertCell();
-                var dayOfWeek_now = new Date(year, month - 1, i + 1).getDay();
+                var dayOfWeek_now = new Date(year_selected, month_selected - 1, i + 1).getDay();
                 var dayOfWeek_indication = '(' + dayOfWeek_kanji[dayOfWeek_now] + ')';
                 let newText = document.createTextNode(i + 1 + dayOfWeek_indication);
                 var contents = member[touban[i]];
@@ -358,6 +392,9 @@ select {
 label {
     font-size: 25px;
 }
+div {
+    display: none;
+}
 .calendar {
     display: inline-block;
     font-size: 30px;
@@ -369,11 +406,14 @@ label {
     /*vertical-align　縦の位置を指定する　topなのでtableの上辺に合わせる*/
     vertical-align: top;
 }
+.start {
+    display: block;
+}
 </style>
 </head>
 <body>
 <h1>外ヶ輪シューターズ<br>鍵当番表</h1>
-<div id="start">
+<div id="start" class="start">
 <p>鍵当番をする人数を<br>選んでください</p>
 <select id="member"></select>
 <label for="member">人</label>
