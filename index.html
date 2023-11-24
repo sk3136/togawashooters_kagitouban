@@ -50,39 +50,68 @@
         }
     }
 
-    // その月の日数
-    var last_monthday = '';
+    // 選択された年
+    var year_selected = 0;
+    // 送られてきた月の日数を返す
+    function last_monthday_Number(select_month) {
+        if (select_month == 1 || select_month == 3 || select_month == 5 || select_month == 7 || select_month == 8 || select_month == 10 || select_month == 12 || select_month == 13) {
+            return 31;
+        } else if (select_month == 4 || select_month == 6 || select_month == 9 || select_month == 11) {
+            return 30;
+        } else if (year_selected % 4 == 0 && year_selected % 100 != 0 || year_selected % 400 == 0) {
+            return 29;
+        } else {
+            return 28;
+        }
+    }
+    
+    function make_calendar(month_Number) {
+        // calendarというidの付いた要素（カレンダー）を取得する
+        let calendar = document.getElementById('calendar');
+        // 選択した月の初日の曜日
+        var first_dayOfWeek = new Date(year_selected, month_Number, 1).getDay();
+        var last_day = last_monthday_Number(month_Number + 1);
+        var date = 1 - first_dayOfWeek;
+        while (date <= last_day) {
+            // カレンダーの行を取得（カレンダーにカレンダーの行を追加する）
+            let newRow = calendar.insertRow();
+            for (var i = 0; i < 7; i++) {
+                // カレンダーのセルを取得（カレンダーの行にカレンダーのセルを追加する）
+                let newCell = newRow.insertCell();
+                // セルのテキストの数値が1以上かつlast_day以下なら
+                if (date >= 1 && date <= last_day) {
+                    // newCellにid（i）を付与する　setAttribute('付与する属性の名前',属性の中身);　setAttribute('idを',iから曜日で増えた日数を引いた数値にする')
+                    newCell.setAttribute('id',date);
+                    // セルがクリックされたとき
+                    newCell.onclick = function() {
+                        // this(newCell)のクラスをredに変える　クラスがついているならクラスを無くす
+                        this.classList.toggle("red");
+                    }
+                    let newText = document.createTextNode(date);
+                    // カレンダーのセルにテキストを入れる
+                    newCell.appendChild(newText);
+                }
+                date++;
+            }
+        }
+    }
+
     // 一月目の日数
     var first_last_monthday = '';
     // 二月目の日数
     var second_last_monthday = '';
-    // 選択された年
-    var year_selected = 0;
     // 選択された月
     var month_selected = 0;
-    // last_monthdayを変更する
-    function last_monthday_Number(select_month) {
-        if (select_month == 1 || select_month == 3 || select_month == 5 || select_month == 7 || select_month == 8 || select_month == 10 || select_month == 12 || select_month == 13) {
-            last_monthday = 31;
-        } else if (select_month == 4 || select_month == 6 || select_month == 9 || select_month == 11) {
-            last_monthday = 30;
-        } else if (year_selected % 4 == 0 && year_selected % 100 != 0 || year_selected % 400 == 0) {
-            last_monthday = 29;
-        } else {
-            last_monthday = 28;
-        }
-    }
-    
     // メンバー全員の入れない日付けを保存する 例　[[1,3,5],[2,4,6]]と入力された場合一人目のメンバーが1,3,5日に入れない、二人目のメンバーが2,4,6日に入れないということ
     var member_day = [];
     // 表示されるメンバーの名前
     var member = [];
     // 入力されたメンバーの人数
     var member_count = '';
-    // まだ当番表を作っていない状態・二度目の表示を設定中の状態・二度目の表示の設定が終わった状態の三つに分ける
+    // 作っている当番表の数
     var calendar_Number = 1;
     // 入れない日付けを設定するカレンダーを作る
-    function firstcalendar() {
+    function calendar_option() {
         if (calendar_Number == 1) {
             year_selected = Number(document.getElementById("select_year").value);
             month_selected = Number(document.getElementById("select_month").value);
@@ -90,141 +119,114 @@
             document.getElementById('month_calendar').textContent = month_selected;
             // 当番表に表示されている月を選択された月にする
             document.getElementById('month').textContent = month_selected;
-            if (month_selected + 1 < 13) {
-                document.getElementById('month+1').textContent = month_selected + 1;
-            } else {
-                document.getElementById('month+1').textContent = month_selected - 11;
-            }
         }
         member_count = document.getElementById("member").value;
         member_day = [];
         // 入力されたメンバーの人数分member_dayとmemberの枠を作る
         for (var i = 0; i < Number(member_count); i++) {
-            member_day.push([]);
             member.push('a' + i);
         }
         document.getElementById('impossible').textContent = member[0];
-        var div = document.getElementById("div");
-        div.style.display = 'block';
+        // registration_sceneというidの付いた要素（不可日の登録画面）を取得する
+        var registration_scene = document.getElementById("registration_scene");
+        // registration_sceneというidの付いた要素（不可日の登録画面）を表示する
+        registration_scene.style.display = 'block';
+        // startというidの付いた要素（メンバーの人数・年・月の登録画面）を取得する
         var div_start = document.getElementById("start");
+        // startというidの付いた要素（メンバーの人数・年・月の登録画面）を隠す
         div_start.style.display = 'none';
         let calendar = document.getElementById('calendar');
-        // first_dayOfWeekの月をcalendar_Numberによって変更する
-        var month_Number = '';
-        last_monthday = '';
-        last_monthday_Number(month_selected);
-        first_last_monthday = last_monthday;
-        last_monthday_Number(month_selected + 1);
-        second_last_monthday = last_monthday;
-        if (calendar_Number == 1) {
-            last_monthday_Number(month_selected);
-            month_Number = month_selected - 1;
-        } else if (calendar_Number == 2) {
-            last_monthday_Number(month_selected + 1);
-            month_Number = month_selected;
-            calendar_Number = 3;
-            // カレンダーのテーブルの列を取得
-            var second_table_row = calendar.rows;
-            for (var i = second_table_row.length - 1; i >= 1; i--) {
-                // カレンダーのテーブルの列を消去する
-                calendar.deleteRow(i);
-            }
+        first_last_monthday = last_monthday_Number(month_selected);
+        second_last_monthday = last_monthday_Number(month_selected + 1);
+        // カレンダーのテーブルの行を取得
+        var second_table_row = calendar.rows;
+        // カレンダーのテーブルの2行目以降の
+        for (var i = second_table_row.length - 1; i >= 1; i--) {
+            // カレンダーのテーブルの行を消去する
+            calendar.deleteRow(i);
         }
-        var last_day = false;
-        // 現在のカレンダーの列数
-        var week_Number = 0;
-        // 選択した月の初日の曜日
-        var first_dayOfWeek = new Date(year_selected, month_Number, 1).getDay();
-        while (last_day == false) {
-            let newRow = calendar.insertRow();
-            for (var i = 1 + week_Number * 7; i < 8 + week_Number * 7; i++) {
-                var space = false;
-                let newCell = newRow.insertCell();
-                // 選択した月の初日の曜日分セルのテキストから数値を引く
-                var text_shift = i - first_dayOfWeek;
-                // セルのテキストの数値が0以下なら
-                if (text_shift <= 0) {
-                    // セルのテキストを空白にする
-                    text_shift = '　';
-                    space = true;
-                }
-                let newText = document.createTextNode(text_shift);
-                newCell.appendChild(newText);
-                // newCellにid（i）を付与する　setAttribute('付与する属性の名前',属性の中身);　setAttribute('idを',iにする')
-                newCell.setAttribute('id',i - first_dayOfWeek);
-                if (space == false) {
-                    newCell.onclick = function() {
-                        // this(newCell)のクラスをredに変える　クラスがついているならクラスを無くす
-                        this.classList.toggle("red");
-                    }
-                }
-                // 日付けを増やす回数を月の日数と曜日で増えた日数の和にする
-                if (i == last_monthday + first_dayOfWeek){
-                    last_day = true;
-                    break;
-                }
-            }
-            week_Number = week_Number + 1;
+        if (calendar_Number == 1) {
+            make_calendar(month_selected - 1);
+        } else if (calendar_Number == 2) {
+            make_calendar(month_selected);
         }
     }
 
-    // 関数reddayが実行された回数
-    var count = 0;
     // 一人一人の入れない日付けを一時的に保存する 例 [1,3,5]と入力された場合1,3,5日に入れないということ
     var impossible = [];
-    // 関数firstcalendarで設定した入れない日付けを変数に入力する
+    // 関数calendar_optionで設定した入れない日付けを変数に入力する
     function redday() {
+        // カレンダーでクリックされたセル（redというClassを持っているセル）を取得する
         var red = document.getElementsByClassName("red");
-        var div = document.getElementById("div");
+        // 不可日の登録画面
+        var registration_scene = document.getElementById("registration_scene");
+        // createというidの付いた要素（決定ボタン画面）を取得する
         var div_create = document.getElementById("create");
+        // impossibleを初期化する
         impossible = [];
         for (var i = 0; i < red.length; i++) {
+            // red のセルのidの値をimpossibleに追加する
             impossible.push(red[i].id);
-            member_day[count].push(impossible);
-            impossible = [];
         }
-        count = count + 1;
+        // member_dayにimpossibleを追加する
+        member_day.push(impossible);
         for (var i = red.length - 1; i >= 0; i--) {
             // remove 要素からクラスを削除する
             red[i].classList.remove("red");
         }
-        if (member_day.length == count) {
-            div.style.display = 'none';
+        // メンバーの人数回分関数reddayが実行されたなら
+        if (member_count == member_day.length) {
+            // 不可日の登録画面を隠す
+            registration_scene.style.display = 'none';
+            // 決定ボタンを表示する
             div_create.style.display = 'block';
         }
-        document.getElementById('impossible').textContent = member[count];
+        // 表示しているメンバーの名前を関数reddayが実行されるたびに次の人に変更する
+        document.getElementById('impossible').textContent = member[member_day.length];
     }
 
-    // 表示・変数の初期化をする
+    // その月の登録をもう一度やり直す
     function restart() {
-        var div = document.getElementById("div");
+        // 不可日の登録画面
+        var registration_scene = document.getElementById("registration_scene");
+        // 決定ボタン
+        var div_create = document.getElementById("create");
+        // メンバーの人数・年・月の登録画面
+        var div_start = document.getElementById("start");
+        registration_scene.style.display = 'block';
+        div_create.style.display = 'none';
+        div_start.style.display = 'none';
+        // 表示されているメンバーの名前を元に戻す
+        document.getElementById('impossible').textContent = member[0];
+        calendar_option();
+    }
+
+    // 表示を初期化して次の月のカレンダーを作る準備をする
+    function next() {
+        var registration_scene = document.getElementById("registration_scene");
         var div_create = document.getElementById("create");
         var div_start = document.getElementById("start");
-        div.style.display = 'block';
+        registration_scene.style.display = 'block';
         div_create.style.display = 'none';
-        div_start.style.display = 'none'
+        div_start.style.display = 'none';
         document.getElementById('impossible').textContent = member[0];
-        impossible = [];
-        member_day = [];
-        count = 0;
-        for (var i = 0; i < Number(member_count); i++) {
-            member_day.push([]);
+        if (month_selected + 1 < 13) {
+            document.getElementById('month_calendar').textContent = month_selected + 1;
+            document.getElementById('month+1').textContent = month_selected + 1;
+        } else {
+            document.getElementById('month_calendar').textContent = month_selected - 11;
+            document.getElementById('month+1').textContent = month_selected - 11;
         }
-        if (calendar_Number == 2) {
-            if (month_selected + 1 < 13) {
-                document.getElementById('month_calendar').textContent = month_selected + 1;
-            } else {
-                document.getElementById('month_calendar').textContent = month_selected - 11;
-            }
-            firstcalendar();
-        }
+        calendar_option();
     }
 
     // 当番表を作り、表示する
     function calendar() {
-        var div_create = document.getElementById('create');
+        // 当番表が完成したかどうか
         var equal = false;
+        // カレンダーの金曜日の数
         var friday = 0;
+        // 二月の日数の和
         var last_monthday_fs = Number(first_last_monthday + second_last_monthday);
         for (var i = 0; i < first_last_monthday; i++) {
             var dayOfWeek_now = new Date(year_selected, month_selected - 1, i + 1).getDay();
@@ -252,13 +254,22 @@
                     possible.push(Number(n));
                 }
                 for (var k = member_day.length - 1; k >= 0; k--) {
-                    if (Math.ceil(Number(last_monthday_fs - friday) % Number(member_count)) != 0) {
-                        // ceil 小数点以下の切り上げ　下のfor文はfor文の中のmember_dayの中身がないと入れないためfor文の上にif文を置く
-                        if (Math.ceil(Number(last_monthday_fs - friday)/Number(member_count)) == random_count[k]) {
-                            possible.splice(k,1);
+                    // メンバーの一人当たりの当番日数が全員同じではないなら
+                    if (Number(last_monthday_fs - friday) % Number(member_count) != 0) {
+                        // 一人当たりの当番日数が人数よりも少ないなら（random_countが0になる場合があるなら）
+                        if (Number(last_monthday_fs - friday) < member_count) {
+                            if (1 == random_count[k]) {
+                                possible.splice(k,1);
+                            }
+                        } else {
+                            // ceil 小数点以下の切り上げ　下のfor文はfor文の中のmember_dayの中身がないと入れないためfor文の上にif文を置く
+                            // Math.ceil(鍵当番がある日数/メンバーの人数) とは メンバー一人が当番に入る最大日数なのでこれと同じ日数入る人から候補から消していく
+                            if (Math.ceil(Number(last_monthday_fs - friday) / Number(member_count)) == random_count[k]) {
+                                possible.splice(k,1);
+                            }
                         }
                     } else {
-                        if (Math.ceil(Number(last_monthday_fs - friday)/Number(member_count)) + 1 == random_count[k]) {
+                        if (Number(last_monthday_fs - friday) / Number(member_count) == random_count[k]) {
                             possible.splice(k,1);
                         }
                     }
@@ -308,8 +319,10 @@
             }
         }
         var dayOfWeek_kanji = ['日','月','火','水','木','金','土'];
-        if (calendar_Number == 3) {
-            for (var i = 0; i < last_monthday; i++) {
+        // 決定ボタン
+        var div_create = document.getElementById('create');
+        if (calendar_Number == 2) {
+            for (var i = 0; i < second_last_monthday; i++) {
                 let second_table = document.getElementById('second_table');
                 let second_newRow = second_table.insertRow();
                 let second_newCell = second_newRow.insertCell();
@@ -330,7 +343,7 @@
             second_table.style.display = 'inline-block';
             div_create.style.display = 'none';
         } else {
-            for (var i = 0; i < last_monthday; i++) {
+            for (var i = 0; i < first_last_monthday; i++) {
                 let table = document.getElementById('table');
                 let newRow = table.insertRow();
                 let newCell = newRow.insertCell();
@@ -348,7 +361,7 @@
                 newCell_2.appendChild(newText_2);
             }
             calendar_Number = 2;
-            restart();
+            next();
         }
     }
 </script>
@@ -422,9 +435,9 @@ div {
 <label for="select_year">年</label>
 <select id="select_month"></select>
 <label for="select_month">月</label>
-<button onclick="firstcalendar()">決定</button>
+<button onclick="calendar_option()">決定</button>
 </div>
-<div id="div">
+<div id="registration_scene">
 <p><a id="month_calendar"></a>月</p>
 <p><a id="impossible"></a>さんの不可日</p>
 <table id="calendar" class="calendar">
